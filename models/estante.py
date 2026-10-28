@@ -1,18 +1,22 @@
-from .livro import Livro
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .livro import Livro
 
 
 class Estante:
-    __codigo_estante: str
-    livros: list[Livro]
-
     def __init__(self, codigo_estante: str) -> None:
-        pass
+        self._codigo_estante: str = codigo_estante
+        self.livros: list[Livro] = []
 
     def adicionar_livro(self, livro: Livro) -> None:
-        pass
+        self.livros.append(livro)
 
     def listar_livros(self) -> list[Livro]:
-        pass
+        return self.livros
 
     def obter_livro(self, isbn: str) -> Livro:
-        pass
+        for livro in self.livros:
+            if livro.isbn == isbn:
+                return livro

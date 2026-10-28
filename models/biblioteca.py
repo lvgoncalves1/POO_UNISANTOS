@@ -1,28 +1,43 @@
-from uuid import UUID, uuid4
-from .aluno import Aluno
-from .emprestimo import Emprestimo
-from .estante import Estante
-from .livro import Livro
+from __future__ import annotations
+from typing import TYPE_CHECKING
+from uuid import UUID
+
+if TYPE_CHECKING:
+    from .usuario import Usuario
+    from .estante import Estante
+    from .emprestimo import Emprestimo
+    from .livro import Livro
 
 
 class Biblioteca:
-    __id: UUID
-    nome: str
-    __alunos: list[Aluno]
-    __estantes: list[Estante]
-    __emprestimos: list[Emprestimo]
+    def __init__(self, id: UUID, nome: str) -> None:
+        self._id: UUID = id
+        self.nome: str = nome
+        self._usuarios: list[Usuario] = []
+        self._estantes: list[Estante] = []
+        self._emprestimos: list[Emprestimo] = []
 
-    def __init__(self, nome: str) -> None:
-        pass
+    def adicionar_estante(self, estante: Estante):
+        self._estantes.append(estante)
 
-    def adicionar_aluno(self, aluno: Aluno) -> None:
-        pass
+    def adicionar_usuario(self, usuario: Usuario) -> None:
+        self._usuarios.append(usuario)
 
-    def buscar_livro(self, isbn: str) -> Livro:
-        pass
+    def buscar_livro(self, isbn: str) -> Livro | None:
+        for estante in self._estantes:
+            livro = estante.obter_livro(isbn)
+
+        if livro is not None:
+            return livro
+
+        return None
 
     def registrar_emprestimo(self, emprestimo: Emprestimo) -> None:
-        pass
+        self._emprestimos.append(emprestimo)
 
     def registrar_devolucao(self, emprestimo: Emprestimo) -> None:
-        pass
+        for emp in self._emprestimos:
+            if emp.id == emprestimo.id:
+                emp.devolver()
+                return
+        raise ValueError("Empréstimo não encontrado nos registros da biblioteca.")

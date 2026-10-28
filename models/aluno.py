@@ -1,20 +1,11 @@
-from typing import TYPE_CHECKING
-from .pessoa import Pessoa
-from .livro import Livro
-
-if TYPE_CHECKING:
-    from .bibliotecario import Bibliotecario
-    from .emprestimo import Emprestimo
+from uuid import UUID
+from .usuario import Usuario
 
 
-class Aluno(Pessoa):
-    __matricula: str
+class Aluno(Usuario):
+    def __init__(self, id: UUID, nome: str, email: str, matricula: str) -> None:
+        super().__init__(id, nome, email)
+        self._matricula: str = matricula
 
-    def __init__(self, nome: str, email: str, matricula: str) -> None:
-        super().__init__(nome, email)
-        self.__matricula = matricula
-
-    def solicitar_emprestimo(
-        self, bibliotecario: "Bibliotecario", livro: Livro
-    ) -> "Emprestimo | None":
-        pass
+    def obter_prazo_emprestimo(self) -> int:
+        return 7

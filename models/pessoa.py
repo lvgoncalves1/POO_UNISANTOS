@@ -1,11 +1,9 @@
 from abc import ABC
-from uuid import UUID, uuid4
+from uuid import UUID
 
 
 class Pessoa(ABC):
-    __id: UUID
-    nome: str
-    email: str
-
-    def __init__(self, nome: str, email: str) -> None:
-        pass
+    def __init__(self, id: UUID, nome: str, email: str) -> None:
+        self._id: UUID = id
+        self.nome: str = nome
+        self.email: str = email
