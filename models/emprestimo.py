@@ -28,6 +28,9 @@ class Emprestimo:
         self.data_devolucao: date | None = data_devolucao
 
     def devolver(self) -> None:
+        if self.data_devolucao is not None:
+            raise ValueError("Empréstimo já foi devolvido")
+
         self.data_devolucao = date.today()
         self.livro.devolver()
 
