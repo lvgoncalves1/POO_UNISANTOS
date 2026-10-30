@@ -31,6 +31,9 @@ class Biblioteca:
 
         return None
 
+    def listar_estantes(self) -> list[Estante]:
+        return list(self._estantes)
+
     def registrar_emprestimo(self, emprestimo: Emprestimo) -> None:
         self._emprestimos.append(emprestimo)
 

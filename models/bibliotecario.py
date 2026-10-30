@@ -20,7 +20,7 @@ class Bibliotecario(Pessoa):
         self.biblioteca: Biblioteca = biblioteca
 
     def cadastrar_livro(self, estante: Estante, livro: Livro) -> None:
-        if estante not in self.biblioteca._estantes:
+        if estante not in self.biblioteca.listar_estantes():
             self.biblioteca.adicionar_estante(estante)
 
         estante.adicionar_livro(livro)

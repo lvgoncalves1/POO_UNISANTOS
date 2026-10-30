@@ -41,7 +41,7 @@ def test_cadastrar_livro_nao_duplica_estante(bibliotecario, biblioteca, estante)
     bibliotecario.cadastrar_livro(estante, Livro("1", "Livro 1", "Autor"))
     bibliotecario.cadastrar_livro(estante, Livro("2", "Livro 2", "Autor"))
 
-    assert biblioteca._estantes.count(estante) == 1
+    assert biblioteca.listar_estantes().count(estante) == 1
     assert len(estante.listar_livros()) == 2
 
 
@@ -50,3 +50,13 @@ def test_registrar_devolucao_de_emprestimo_desconhecido_gera_erro(biblioteca, al
 
     with pytest.raises(ValueError, match="Empréstimo não encontrado"):
         biblioteca.registrar_devolucao(emprestimo)
+
+
+def test_listar_estantes_devolve_copia_e_protege_a_lista_interna(
+    bibliotecario, biblioteca, estante, livro
+):
+    bibliotecario.cadastrar_livro(estante, livro)
+
+    biblioteca.listar_estantes().clear()
+
+    assert biblioteca.listar_estantes() == [estante]
