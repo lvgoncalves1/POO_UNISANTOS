@@ -26,9 +26,8 @@ class Biblioteca:
     def buscar_livro(self, isbn: str) -> Livro | None:
         for estante in self._estantes:
             livro = estante.obter_livro(isbn)
-
-        if livro is not None:
-            return livro
+            if livro is not None:
+                return livro
 
         return None
 

@@ -3,6 +3,8 @@ from datetime import date
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from utils import formatar_data_br
+
 if TYPE_CHECKING:
     from .usuario import Usuario
     from .livro import Livro
@@ -26,6 +28,9 @@ class Emprestimo:
         self.data_devolucao: date | None = data_devolucao
 
     def devolver(self) -> None:
+        if self.data_devolucao is not None:
+            raise ValueError("Empréstimo já foi devolvido")
+
         self.data_devolucao = date.today()
         self.livro.devolver()
 
@@ -43,10 +48,10 @@ class Emprestimo:
         return self._id
 
     def __repr__(self) -> str:
-        inicio_br = self.data_inicio.strftime("%d/%m/%Y")
-        prevista_br = self.data_prevista.strftime("%d/%m/%Y")
+        inicio_br = formatar_data_br(self.data_inicio)
+        prevista_br = formatar_data_br(self.data_prevista)
         devolucao_br = (
-            self.data_devolucao.strftime("%d/%m/%Y")
+            formatar_data_br(self.data_devolucao)
             if self.data_devolucao
             else "Pendente"
         )
