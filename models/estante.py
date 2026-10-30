@@ -16,7 +16,8 @@ class Estante:
     def listar_livros(self) -> list[Livro]:
         return self.livros
 
-    def obter_livro(self, isbn: str) -> Livro:
+    def obter_livro(self, isbn: str) -> Livro | None:
         for livro in self.livros:
             if livro.isbn == isbn:
                 return livro
+        return None
