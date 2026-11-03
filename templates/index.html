@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ nome_biblioteca }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>📚 {{ nome_biblioteca }}</h1>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alerta">
+                    {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="grid">
+            <div class="card">
+                <h2>Cadastrar Livro</h2>
+                <form action="{{ url_for('biblioteca.cadastrar_livro') }}" method="POST">
+                    <input type="text" name="isbn" placeholder="ISBN (ex: 444)" required>
+                    <input type="text" name="titulo" placeholder="Título do Livro" required>
+                    <input type="text" name="autor" placeholder="Autor" required>
+                    <button type="submit">Adicionar Livro</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Cadastrar Usuário</h2>
+                <form action="{{ url_for('biblioteca.cadastrar_usuario') }}" method="POST">
+                    <input type="text" name="nome" placeholder="Nome completo" required>
+                    <input type="email" name="email" placeholder="E-mail" required>
+                    <select name="tipo" required>
+                        <option value="aluno">Aluno (Prazo: 7 dias)</option>
+                        <option value="professor">Professor (Prazo: 30 dias)</option>
+                        <option value="visitante">Visitante (Prazo: 3 dias)</option>
+                    </select>
+                    <input type="text" name="documento" placeholder="RA / Registro / CPF" required>
+                    <input type="text" name="departamento" placeholder="Departamento (se Professor)">
+                    <button type="submit">Cadastrar Usuário</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Realizar Empréstimo</h2>
+                <form action="{{ url_for('biblioteca.emprestar') }}" method="POST">
+                    <select name="usuario" required>
+                        <option value="">Selecione o Usuário...</option>
+                        {% for u in usuarios %}
+                            <option value="{{ u.nome }}">{{ u.nome }} ({{ u.__class__.__name__ }})</option>
+                        {% endfor %}
+                    </select>
+                    <select name="isbn" required>
+                        <option value="">Selecione o Livro...</option>
+                        {% for l in livros_disponiveis %}
+                        <option value="{{ l.isbn }}">{{ l.titulo }} (ISBN: {{ l.isbn }})</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Emprestar Livro</button>
+                </form>
+            </div>
+        </div>
+
+        <h2>Acervo na Estante</h2>
+        <form action="{{ url_for('biblioteca.index') }}" method="GET" style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <input type="text" name="q" placeholder="Buscar livro pelo título..." value="{{ termo_busca }}" style="margin-top: 0;">
+            <button type="submit" style="width: auto; margin-top: 0; padding: 8px 20px;">🔍 Buscar</button>
+            {% if termo_busca %}
+                <a href="{{ url_for('biblioteca.index') }}" style="padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px;">Limpar</a>
+            {% endif %}
+        </form>
+        <table>
+            <tr>
+                <th>ISBN</th>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Status</th>
+                <th>Ação</th>
+            </tr>
+            {% for l in livros %}
+            <tr>
+                <td>{{ l.isbn }}</td>
+                <td>{{ l.titulo }}</td>
+                <td>{{ l.autor }}</td>
+                <td>{{ "Disponível" if l.disponivel else "Emprestado" }}</td>
+                <td>
+                    {% if not l.disponivel %}
+                    <form action="{{ url_for('biblioteca.devolver', isbn=l.isbn) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn-devolver">Devolver</button>
+                    </form>
+                    {% else %}-{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>Histórico de Empréstimos</h2>
+        <ul>
+            {% for emp in emprestimos %}
+                <li>{{ emp }}</li>
+            {% else %}
+                <li>Nenhum empréstimo registrado ainda.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

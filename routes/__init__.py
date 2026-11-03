@@ -1,0 +1,1 @@
+from .biblioteca_routes import criar_rotas

@@ -1,62 +1,35 @@
 from uuid import uuid4
-from models import (
-    Biblioteca,
-    Bibliotecario,
-    Estante,
-    Livro,
-    Aluno,
-    Professor,
-    Visitante,
-)
+from flask import Flask
+from models import Biblioteca, Bibliotecario, Estante, Livro, Aluno, Professor, Visitante
+from services import BibliotecaService
+from controllers import BibliotecaController
+from routes import criar_rotas
 
 
-def main() -> None:
-    bib = Biblioteca(uuid4(), "Biblioteca Central")
-    estante_tech = Estante("A1")
-    bib.adicionar_estante(estante_tech)
+def criar_app() -> Flask:
+    app = Flask(__name__)
+    app.secret_key = "chave-secreta-unisantos"
+    
+    bib = Biblioteca(uuid4(), "BibliotecAI")
+    estante = Estante("A1")
+    bib.adicionar_estante(estante)
+    bibliotecario = Bibliotecario(uuid4(), "Carlos", "carlos@bib.com", "BIB-01", bib)
 
-    bibliotecario = Bibliotecario(
-        id=uuid4(),
-        nome="Carlos",
-        email="carlos@bib.com",
-        registro="BIB-01",
-        biblioteca=bib,
-    )
+    service = BibliotecaService(bibliotecario, estante)
+    service.cadastrar_livro(Livro("111", "Arquitetura Limpa", "Robert Martin"))
+    service.cadastrar_livro(Livro("222", "Padrões de Projeto", "GoF"))
+    service.cadastrar_livro(Livro("333", "Entendendo Algoritmos", "Aditya Bhargava"))
 
-    livro1 = Livro("111", "Arquitetura Limpa", "Robert Martin")
-    livro2 = Livro("222", " Padrões de Projeto", "GoF")
-    livro3 = Livro("333", "Entendendo Algoritmos", "Aditya Bhargava")
+    service.cadastrar_usuario(Aluno(uuid4(), "Lucas", "lucas@edu.com", "RA-001"))
+    service.cadastrar_usuario(Professor(uuid4(), "Dr. Silva", "silva@edu.com", "FUNC-99", "Computação"))
+    service.cadastrar_usuario(Visitante(uuid4(), "Mariana", "mari@gmail.com", "123.456.789-00"))
 
-    bibliotecario.cadastrar_livro(estante_tech, livro1)
-    bibliotecario.cadastrar_livro(estante_tech, livro2)
-    bibliotecario.cadastrar_livro(estante_tech, livro3)
+    controller = BibliotecaController(service)
+    app.register_blueprint(criar_rotas(controller))
 
-    aluno = Aluno(uuid4(), "Lucas", "lucas@edu.com", "RA-001")
-    professor = Professor(uuid4(), "Dr. Silva", "silva@edu.com", "FUNC-99", "Computação")
-    visitante = Visitante(uuid4(), "Mariana", "mari@gmail.com", "123.456.789-00")
-
-    bib.adicionar_usuario(aluno)
-    bib.adicionar_usuario(professor)
-    bib.adicionar_usuario(visitante)
-
-    print("=== Realizando Empréstimos ===")
-    emp_aluno = aluno.solicitar_emprestimo(bibliotecario, bib.buscar_livro("111"))
-    emp_prof = professor.solicitar_emprestimo(bibliotecario, bib.buscar_livro("222"))
-    emp_visit = visitante.solicitar_emprestimo(bibliotecario, bib.buscar_livro("333"))
-
-    print("Aluno:    ", emp_aluno)
-    print("Professor:", emp_prof)
-    print("Visitante:", emp_visit)
-
-    print("\n=== Testando Livro Indisponível ===")
-    visitante.solicitar_emprestimo(bibliotecario, bib.buscar_livro("111"))
-
-    print("\n=== Realizando Devolução ===")
-    if emp_aluno:
-        bibliotecario.registrar_devolucao(emp_aluno)
-        print("Após devolução:", emp_aluno)
-        print("Livro 111 disponível novamente?", livro1.disponivel)
+    return app
 
 
 if __name__ == "__main__":
-    main()
+    app = criar_app()
+    app.run(debug=True)
