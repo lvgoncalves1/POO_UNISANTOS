@@ -21,6 +21,28 @@ def criar_rotas(controller: BibliotecaController) -> Blueprint:
         flash(msg)
         return redirect(url_for("biblioteca.index"))
 
+    @bp.route("/livros/editar/<isbn>", methods=["POST"])
+    def editar_livro(isbn: str):
+        try:
+            msg = controller.editar_livro(
+                isbn,
+                request.form["titulo"],
+                request.form["autor"],
+            )
+            flash(msg)
+        except ValueError as e:
+            flash(f"Erro: {e}")
+        return redirect(url_for("biblioteca.index"))
+
+    @bp.route("/livros/excluir/<isbn>", methods=["POST"])
+    def excluir_livro(isbn: str):
+        try:
+            msg = controller.excluir_livro(isbn)
+            flash(msg)
+        except ValueError as e:
+            flash(f"Erro: {e}")
+        return redirect(url_for("biblioteca.index"))
+
     @bp.route("/usuarios", methods=["POST"])
     def cadastrar_usuario():
         msg = controller.criar_usuario(
@@ -31,6 +53,28 @@ def criar_rotas(controller: BibliotecaController) -> Blueprint:
             request.form.get("departamento", ""),
         )
         flash(msg)
+        return redirect(url_for("biblioteca.index"))
+
+    @bp.route("/usuarios/editar/<usuario_id>", methods=["POST"])
+    def editar_usuario(usuario_id: str):
+        try:
+            msg = controller.editar_usuario(
+                usuario_id,
+                request.form["nome"],
+                request.form["email"],
+            )
+            flash(msg)
+        except ValueError as e:
+            flash(f"Erro: {e}")
+        return redirect(url_for("biblioteca.index"))
+
+    @bp.route("/usuarios/excluir/<usuario_id>", methods=["POST"])
+    def excluir_usuario(usuario_id: str):
+        try:
+            msg = controller.excluir_usuario(usuario_id)
+            flash(msg)
+        except ValueError as e:
+            flash(f"Erro: {e}")
         return redirect(url_for("biblioteca.index"))
 
     @bp.route("/emprestar", methods=["POST"])
