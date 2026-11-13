@@ -1,5 +1,7 @@
 import pytest
 
+from models import Livro
+
 
 def test_livro_comeca_disponivel(livro):
     assert livro.disponivel is True
@@ -38,3 +40,21 @@ def test_repr_mostra_status(livro):
     assert "Disponível" in repr(livro)
     livro.emprestar()
     assert "Emprestado" in repr(livro)
+
+
+@pytest.mark.parametrize("campo", ["isbn", "titulo", "autor"])
+def test_livro_nao_aceita_campo_vazio(campo):
+    dados = {"isbn": "1", "titulo": "Título", "autor": "Autor", campo: "   "}
+    with pytest.raises(ValueError, match="obrigatório"):
+        Livro(**dados)
+
+
+def test_livro_remove_espacos_extras():
+    livro = Livro("  1  ", "  Título  ", "  Autor  ")
+    assert (livro.isbn, livro.titulo, livro.autor) == ("1", "Título", "Autor")
+
+
+def test_atualizar_titulo_vazio_gera_erro_e_mantem_valor(livro):
+    with pytest.raises(ValueError, match="obrigatório"):
+        livro.titulo = "   "
+    assert livro.titulo == "Sistemas Digitais"

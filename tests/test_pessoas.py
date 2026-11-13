@@ -41,3 +41,17 @@ def test_encapsulamento_atributos_privados(bibliotecario):
     assert bibliotecario.registro == "REG-02"
     with pytest.raises(AttributeError):
         bibliotecario.registro = "OUTRO"
+
+
+def test_pessoa_expoe_id_somente_leitura(aluno):
+    assert aluno.id == aluno._id
+    with pytest.raises(AttributeError):
+        aluno.id = uuid4()
+
+
+def test_pessoa_nao_aceita_nome_ou_email_vazio(aluno):
+    with pytest.raises(ValueError, match="nome"):
+        aluno.nome = "   "
+    with pytest.raises(ValueError, match="e-mail"):
+        aluno.email = ""
+    assert aluno.nome == "Lucas"
