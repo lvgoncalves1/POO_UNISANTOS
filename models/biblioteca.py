@@ -37,6 +37,7 @@ class Biblioteca:
             if emp.usuario is usuario and emp.data_devolucao is None:
                 raise ValueError("Não é possível excluir um usuário com empréstimo pendente.")
         self._usuarios.remove(usuario)
+        self._emprestimos = [e for e in self._emprestimos if e.usuario is not usuario]
 
     def buscar_livro(self, isbn: str) -> Livro | None:
         for estante in self._estantes:
@@ -55,6 +56,7 @@ class Biblioteca:
         for estante in self._estantes:
             if livro in estante.listar_livros():
                 estante.remover_livro(livro)
+                self._emprestimos = [e for e in self._emprestimos if e.livro is not livro]
                 return
         raise ValueError("Livro não encontrado.")
 

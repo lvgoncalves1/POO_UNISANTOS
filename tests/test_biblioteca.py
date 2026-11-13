@@ -120,6 +120,24 @@ def test_nao_remove_livro_emprestado(bibliotecario, biblioteca, aluno, estante, 
     assert biblioteca.buscar_livro("123-456") is livro
 
 
+def test_remover_usuario_ou_livro_apaga_historico_de_emprestimos(
+    bibliotecario, biblioteca, aluno, professor, estante, livro
+):
+    outro_livro = Livro("999", "Refactoring", "Fowler")
+    biblioteca.adicionar_usuario(aluno)
+    biblioteca.adicionar_usuario(professor)
+    bibliotecario.cadastrar_livro(estante, livro)
+    bibliotecario.cadastrar_livro(estante, outro_livro)
+    bibliotecario.registrar_devolucao(bibliotecario.realizar_emprestimo(aluno, livro))
+    bibliotecario.registrar_devolucao(bibliotecario.realizar_emprestimo(professor, outro_livro))
+
+    biblioteca.remover_usuario(aluno)
+    assert [e.usuario for e in biblioteca.listar_emprestimos()] == [professor]
+
+    biblioteca.remover_livro(outro_livro)
+    assert biblioteca.listar_emprestimos() == []
+
+
 def test_buscar_estante_por_codigo(bibliotecario, biblioteca, estante, livro):
     bibliotecario.cadastrar_livro(estante, livro)
 
