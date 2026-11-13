@@ -20,6 +20,9 @@ class Bibliotecario(Pessoa):
         self.biblioteca: Biblioteca = biblioteca
 
     def cadastrar_livro(self, estante: Estante, livro: Livro) -> None:
+        if self.biblioteca.buscar_livro(livro.isbn) is not None:
+            raise ValueError(f"Já existe um livro com o ISBN '{livro.isbn}'.")
+
         if estante not in self.biblioteca.listar_estantes():
             self.biblioteca.adicionar_estante(estante)
 

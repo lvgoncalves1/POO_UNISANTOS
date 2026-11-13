@@ -62,6 +62,15 @@ def test_listar_estantes_devolve_copia_e_protege_a_lista_interna(
     assert biblioteca.listar_estantes() == [estante]
 
 
+def test_nao_permite_isbn_duplicado(bibliotecario, biblioteca, estante, livro):
+    bibliotecario.cadastrar_livro(estante, livro)
+
+    with pytest.raises(ValueError, match="Já existe um livro com o ISBN '123-456'"):
+        bibliotecario.cadastrar_livro(Estante("B1"), Livro("123-456", "Outro", "Autor"))
+
+    assert len(biblioteca.listar_livros()) == 1
+
+
 def test_buscar_usuario_por_id(biblioteca, aluno):
     biblioteca.adicionar_usuario(aluno)
 
