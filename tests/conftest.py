@@ -11,6 +11,34 @@ from models import (
     Professor,
     Visitante,
 )
+from repositories import (
+    BancoSQLite,
+    SQLiteEmprestimoRepository,
+    SQLiteLivroRepository,
+    SQLiteUsuarioRepository,
+)
+
+
+@pytest.fixture
+def banco():
+    banco = BancoSQLite(":memory:")
+    yield banco
+    banco.fechar()
+
+
+@pytest.fixture
+def repositorio_livros(banco):
+    return SQLiteLivroRepository(banco)
+
+
+@pytest.fixture
+def repositorio_usuarios(banco):
+    return SQLiteUsuarioRepository(banco)
+
+
+@pytest.fixture
+def repositorio_emprestimos(banco):
+    return SQLiteEmprestimoRepository(banco)
 
 
 @pytest.fixture

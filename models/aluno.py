@@ -9,3 +9,7 @@ class Aluno(Usuario):
 
     def obter_prazo_emprestimo(self) -> int:
         return 7
+
+    @property
+    def matricula(self) -> str:
+        return self._matricula

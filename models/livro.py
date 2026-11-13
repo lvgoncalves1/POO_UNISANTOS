@@ -1,8 +1,11 @@
+from utils import validar_texto_obrigatorio
+
+
 class Livro:
     def __init__(self, isbn: str, titulo: str, autor: str, disponivel: bool = True) -> None:
-        self._isbn: str = isbn
-        self.titulo: str = titulo
-        self.autor: str = autor
+        self._isbn: str = validar_texto_obrigatorio(isbn, "ISBN")
+        self.titulo = titulo
+        self.autor = autor
         self._disponivel: bool = disponivel
 
     def emprestar(self) -> None:
@@ -20,6 +23,22 @@ class Livro:
     @property
     def isbn(self) -> str:
         return self._isbn
+
+    @property
+    def titulo(self) -> str:
+        return self._titulo
+
+    @titulo.setter
+    def titulo(self, valor: str) -> None:
+        self._titulo: str = validar_texto_obrigatorio(valor, "título")
+
+    @property
+    def autor(self) -> str:
+        return self._autor
+
+    @autor.setter
+    def autor(self, valor: str) -> None:
+        self._autor: str = validar_texto_obrigatorio(valor, "autor")
 
     @property
     def disponivel(self) -> bool:

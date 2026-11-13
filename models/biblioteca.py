@@ -23,6 +23,22 @@ class Biblioteca:
     def adicionar_usuario(self, usuario: Usuario) -> None:
         self._usuarios.append(usuario)
 
+    def buscar_usuario(self, usuario_id: UUID) -> Usuario | None:
+        for usuario in self._usuarios:
+            if usuario.id == usuario_id:
+                return usuario
+        return None
+
+    def listar_usuarios(self) -> list[Usuario]:
+        return list(self._usuarios)
+
+    def remover_usuario(self, usuario: Usuario) -> None:
+        for emp in self._emprestimos:
+            if emp.usuario is usuario and emp.data_devolucao is None:
+                raise ValueError("Não é possível excluir um usuário com empréstimo pendente.")
+        self._usuarios.remove(usuario)
+        self._emprestimos = [e for e in self._emprestimos if e.usuario is not usuario]
+
     def buscar_livro(self, isbn: str) -> Livro | None:
         for estante in self._estantes:
             livro = estante.obter_livro(isbn)
@@ -31,8 +47,30 @@ class Biblioteca:
 
         return None
 
+    def listar_livros(self) -> list[Livro]:
+        return [livro for estante in self._estantes for livro in estante.listar_livros()]
+
+    def remover_livro(self, livro: Livro) -> None:
+        if not livro.disponivel:
+            raise ValueError("Não é possível excluir um livro que está emprestado no momento.")
+        for estante in self._estantes:
+            if livro in estante.listar_livros():
+                estante.remover_livro(livro)
+                self._emprestimos = [e for e in self._emprestimos if e.livro is not livro]
+                return
+        raise ValueError("Livro não encontrado.")
+
+    def buscar_estante(self, codigo_estante: str) -> Estante | None:
+        for estante in self._estantes:
+            if estante.codigo_estante == codigo_estante:
+                return estante
+        return None
+
     def listar_estantes(self) -> list[Estante]:
         return list(self._estantes)
+
+    def listar_emprestimos(self) -> list[Emprestimo]:
+        return list(self._emprestimos)
 
     def registrar_emprestimo(self, emprestimo: Emprestimo) -> None:
         self._emprestimos.append(emprestimo)

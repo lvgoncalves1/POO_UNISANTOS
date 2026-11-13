@@ -13,12 +13,15 @@ def criar_rotas(controller: BibliotecaController) -> Blueprint:
 
     @bp.route("/livros", methods=["POST"])
     def cadastrar_livro():
-        msg = controller.criar_livro(
-            request.form["isbn"],
-            request.form["titulo"],
-            request.form["autor"],
-        )
-        flash(msg)
+        try:
+            msg = controller.criar_livro(
+                request.form["isbn"],
+                request.form["titulo"],
+                request.form["autor"],
+            )
+            flash(msg)
+        except ValueError as e:
+            flash(f"Erro: {e}")
         return redirect(url_for("biblioteca.index"))
 
     @bp.route("/livros/editar/<isbn>", methods=["POST"])
@@ -45,14 +48,17 @@ def criar_rotas(controller: BibliotecaController) -> Blueprint:
 
     @bp.route("/usuarios", methods=["POST"])
     def cadastrar_usuario():
-        msg = controller.criar_usuario(
-            request.form["nome"],
-            request.form["email"],
-            request.form["tipo"],
-            request.form["documento"],
-            request.form.get("departamento", ""),
-        )
-        flash(msg)
+        try:
+            msg = controller.criar_usuario(
+                request.form["nome"],
+                request.form["email"],
+                request.form["tipo"],
+                request.form["documento"],
+                request.form.get("departamento", ""),
+            )
+            flash(msg)
+        except ValueError as e:
+            flash(f"Erro: {e}")
         return redirect(url_for("biblioteca.index"))
 
     @bp.route("/usuarios/editar/<usuario_id>", methods=["POST"])

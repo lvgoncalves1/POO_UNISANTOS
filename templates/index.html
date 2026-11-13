@@ -50,7 +50,7 @@
                     <select name="usuario" required>
                         <option value="">Selecione o Usuário...</option>
                         {% for u in usuarios %}
-                            <option value="{{ u.nome }}">{{ u.nome }} ({{ u.__class__.__name__ }})</option>
+                            <option value="{{ u.id }}">{{ u.nome }} ({{ u.__class__.__name__ }})</option>
                         {% endfor %}
                     </select>
                     <select name="isbn" required>
@@ -104,7 +104,7 @@
                             </form>
                         </details>
 
-                        <form action="{{ url_for('biblioteca.excluir_livro', isbn=l.isbn) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir o livro {{ l.titulo }}?');">
+                        <form action="{{ url_for('biblioteca.excluir_livro', isbn=l.isbn) }}" method="POST" data-nome="{{ l.titulo }}" onsubmit="return confirm('Tem certeza que deseja excluir o livro ' + this.dataset.nome + '?');">
                             <button type="submit" class="btn-acao btn-excluir">Excluir</button>
                         </form>
                     </div>
@@ -136,14 +136,14 @@
                     <div class="acoes-grupo">
                         <details class="editar-popover">
                             <summary class="btn-acao btn-editar">Editar</summary>
-                            <form action="{{ url_for('biblioteca.editar_usuario', usuario_id=u._id) }}" method="POST" class="form-inline-edit">
+                            <form action="{{ url_for('biblioteca.editar_usuario', usuario_id=u.id) }}" method="POST" class="form-inline-edit">
                                 <input type="text" name="nome" value="{{ u.nome }}" placeholder="Novo nome" required>
                                 <input type="email" name="email" value="{{ u.email }}" placeholder="Novo e-mail" required>
                                 <button type="submit" class="btn-acao btn-salvar">Salvar</button>
                             </form>
                         </details>
 
-                        <form action="{{ url_for('biblioteca.excluir_usuario', usuario_id=u._id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir o usuário {{ u.nome }}?');">
+                        <form action="{{ url_for('biblioteca.excluir_usuario', usuario_id=u.id) }}" method="POST" data-nome="{{ u.nome }}" onsubmit="return confirm('Tem certeza que deseja excluir o usuário ' + this.dataset.nome + '?');">
                             <button type="submit" class="btn-acao btn-excluir">Excluir</button>
                         </form>
                     </div>
