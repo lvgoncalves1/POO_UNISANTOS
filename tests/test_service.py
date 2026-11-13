@@ -7,8 +7,18 @@ from services import BibliotecaService
 
 
 @pytest.fixture
-def service(bibliotecario, estante, livro, aluno):
-    service = BibliotecaService(bibliotecario, estante)
+def service(
+    bibliotecario,
+    estante,
+    livro,
+    aluno,
+    repositorio_livros,
+    repositorio_usuarios,
+    repositorio_emprestimos,
+):
+    service = BibliotecaService(
+        bibliotecario, estante, repositorio_livros, repositorio_usuarios, repositorio_emprestimos
+    )
     service.cadastrar_livro(livro)
     service.cadastrar_usuario(aluno)
     return service

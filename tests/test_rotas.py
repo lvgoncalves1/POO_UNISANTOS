@@ -7,7 +7,7 @@ from main import criar_app
 
 @pytest.fixture
 def cliente():
-    app = criar_app()
+    app = criar_app(":memory:")
     app.testing = True
     return app.test_client()
 
@@ -103,3 +103,38 @@ def test_titulo_com_aspas_nao_injeta_javascript(cliente):
     form = re.search(r'<form action="/livros/excluir/666"[^>]*>', pagina(cliente)).group(0)
     onsubmit = re.search(r'onsubmit="([^"]*)"', form).group(1)
     assert "alert(1)" not in onsubmit
+
+
+def test_dados_persistem_apos_reiniciar_a_aplicacao(tmp_path):
+    caminho = str(tmp_path / "biblioteca.db")
+    antes = criar_app(caminho).test_client()
+
+    antes.post("/livros", data={"isbn": "444", "titulo": "TDD", "autor": "Kent Beck"})
+    antes.post("/livros/editar/111", data={"titulo": "Arquitetura Limpa 2", "autor": "Martin"})
+    antes.post("/livros/excluir/333")
+    antes.post(
+        "/usuarios",
+        data={"nome": "Ana", "email": "ana@x.com", "tipo": "professor", "documento": "F-1"},
+    )
+    antes.post("/emprestar", data={"usuario": id_do_usuario(antes, "Ana"), "isbn": "222"})
+
+    depois = criar_app(caminho).test_client()
+    html = pagina(depois)
+
+    assert "TDD" in html
+    assert "Arquitetura Limpa 2" in html
+    assert "Entendendo Algoritmos" not in html
+    assert "<td>Professor</td>" in html and "Ana" in html
+    assert "Usuário: Ana" in html
+    assert "/devolver/222" in html
+    assert html.count("<td>111</td>") == 1
+
+
+def test_dados_iniciais_nao_sao_duplicados_ao_reiniciar(tmp_path):
+    caminho = str(tmp_path / "biblioteca.db")
+    criar_app(caminho)
+
+    html = pagina(criar_app(caminho).test_client())
+
+    assert html.count("<td>111</td>") == 1
+    assert html.count("<td>Mariana</td>") == 1
