@@ -60,3 +60,63 @@ def test_listar_estantes_devolve_copia_e_protege_a_lista_interna(
     biblioteca.listar_estantes().clear()
 
     assert biblioteca.listar_estantes() == [estante]
+
+
+def test_buscar_usuario_por_id(biblioteca, aluno):
+    biblioteca.adicionar_usuario(aluno)
+
+    assert biblioteca.buscar_usuario(aluno.id) is aluno
+    assert biblioteca.buscar_usuario(uuid4()) is None
+
+
+def test_remover_usuario_sem_pendencias(biblioteca, aluno):
+    biblioteca.adicionar_usuario(aluno)
+
+    biblioteca.remover_usuario(aluno)
+
+    assert biblioteca.listar_usuarios() == []
+
+
+def test_nao_remove_usuario_com_emprestimo_pendente(
+    biblioteca, bibliotecario, aluno, estante, livro
+):
+    biblioteca.adicionar_usuario(aluno)
+    bibliotecario.cadastrar_livro(estante, livro)
+    bibliotecario.realizar_emprestimo(aluno, livro)
+
+    with pytest.raises(ValueError, match="empréstimo pendente"):
+        biblioteca.remover_usuario(aluno)
+
+    assert biblioteca.listar_usuarios() == [aluno]
+
+
+def test_remover_livro_de_qualquer_estante(bibliotecario, biblioteca):
+    livro_b = Livro("222", "Padrões de Projeto", "GoF")
+    bibliotecario.cadastrar_livro(Estante("A1"), Livro("111", "Arquitetura Limpa", "Martin"))
+    bibliotecario.cadastrar_livro(Estante("B1"), livro_b)
+
+    biblioteca.remover_livro(livro_b)
+
+    assert biblioteca.buscar_livro("222") is None
+    assert len(biblioteca.listar_livros()) == 1
+
+
+def test_nao_remove_livro_emprestado(bibliotecario, biblioteca, aluno, estante, livro):
+    bibliotecario.cadastrar_livro(estante, livro)
+    bibliotecario.realizar_emprestimo(aluno, livro)
+
+    with pytest.raises(ValueError, match="emprestado"):
+        biblioteca.remover_livro(livro)
+
+    assert biblioteca.buscar_livro("123-456") is livro
+
+
+@pytest.mark.parametrize("listar", ["listar_usuarios", "listar_livros", "listar_emprestimos"])
+def test_listagens_devolvem_copia(bibliotecario, biblioteca, aluno, estante, livro, listar):
+    biblioteca.adicionar_usuario(aluno)
+    bibliotecario.cadastrar_livro(estante, livro)
+    bibliotecario.realizar_emprestimo(aluno, livro)
+
+    getattr(biblioteca, listar)().clear()
+
+    assert len(getattr(biblioteca, listar)()) == 1

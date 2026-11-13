@@ -13,6 +13,9 @@ class Estante:
     def adicionar_livro(self, livro: Livro) -> None:
         self.livros.append(livro)
 
+    def remover_livro(self, livro: Livro) -> None:
+        self.livros.remove(livro)
+
     def listar_livros(self) -> list[Livro]:
         return self.livros
 
