@@ -58,6 +58,12 @@ class Biblioteca:
                 return
         raise ValueError("Livro não encontrado.")
 
+    def buscar_estante(self, codigo_estante: str) -> Estante | None:
+        for estante in self._estantes:
+            if estante.codigo_estante == codigo_estante:
+                return estante
+        return None
+
     def listar_estantes(self) -> list[Estante]:
         return list(self._estantes)
 

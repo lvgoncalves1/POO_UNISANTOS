@@ -9,3 +9,7 @@ class Visitante(Usuario):
 
     def obter_prazo_emprestimo(self) -> int:
         return 3
+
+    @property
+    def cpf(self) -> str:
+        return self._cpf

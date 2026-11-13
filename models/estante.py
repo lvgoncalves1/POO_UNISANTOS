@@ -24,3 +24,7 @@ class Estante:
             if livro.isbn == isbn:
                 return livro
         return None
+
+    @property
+    def codigo_estante(self) -> str:
+        return self._codigo_estante

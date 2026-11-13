@@ -120,6 +120,13 @@ def test_nao_remove_livro_emprestado(bibliotecario, biblioteca, aluno, estante, 
     assert biblioteca.buscar_livro("123-456") is livro
 
 
+def test_buscar_estante_por_codigo(bibliotecario, biblioteca, estante, livro):
+    bibliotecario.cadastrar_livro(estante, livro)
+
+    assert biblioteca.buscar_estante("EST-A1") is estante
+    assert biblioteca.buscar_estante("nao-existe") is None
+
+
 @pytest.mark.parametrize("listar", ["listar_usuarios", "listar_livros", "listar_emprestimos"])
 def test_listagens_devolvem_copia(bibliotecario, biblioteca, aluno, estante, livro, listar):
     biblioteca.adicionar_usuario(aluno)

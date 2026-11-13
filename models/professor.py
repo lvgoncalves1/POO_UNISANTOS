@@ -10,3 +10,7 @@ class Professor(Usuario):
 
     def obter_prazo_emprestimo(self) -> int:
         return 30
+
+    @property
+    def registro_funcional(self) -> str:
+        return self._registro_funcional

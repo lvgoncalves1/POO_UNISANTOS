@@ -37,7 +37,9 @@ def test_polimorfismo_prazo_emprestimo(request, fixture_usuario, prazo_esperado)
 def test_encapsulamento_atributos_privados(bibliotecario):
     aluno = Aluno(id=uuid4(), nome="Lucas", email="l@l.com", matricula="RA-1")
 
-    assert not hasattr(aluno, "matricula")
+    assert aluno.matricula == "RA-1"
+    with pytest.raises(AttributeError):
+        aluno.matricula = "RA-2"
     assert bibliotecario.registro == "REG-02"
     with pytest.raises(AttributeError):
         bibliotecario.registro = "OUTRO"
